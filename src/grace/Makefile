@@ -65,7 +65,7 @@ include pull.mk
 build: $(SRC_DIRS)
 	( \
 	  cd $(SOURCE_DIR); \
-          . /etc/profile.d modules.sh; \
+          . /etc/profile.d/modules.sh; \
           module load gnu mvapich2_ib fftw/2.1.5 netcdf; \
           export CC=gcc; \
           export FC=gfortran; \
