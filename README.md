@@ -6,7 +6,6 @@ This roll bundles grace
 
 For more information about the various packages included in the grace roll please visit their official web pages:
 
-
 - <a href="http://plasma-gate.weizmann.ac.il/Grace/" target="_blank"></a> is .
 
 
@@ -23,34 +22,47 @@ Rocks development machine.
 
 ## Dependencies
 
-The fftw and netcdf rolls must be installed first
+yum install libXp libXp-devel openmotif openmotif-devel
+
+The sdsc-roll must be installed on the build machine, since the build process
+depends on make include files provided by that roll.
+
+The roll sources assume that modulefiles provided by SDSC compiler and mpi
+rolls are available, but it will build without them as long as the environment
+variables they provide are otherwise defined.
+
+The build process requires the NETCDF and FFTW libraries and assumes that the
+modulefiles provided by the SDSC netcdf-roll and fftw-roll are available.  It will build without
+the modulefiles as long as the environment variables they provide are otherwise
+defined.
 
 
 ## Building
 
-To build the grace-roll, execute these instructions on a Rocks development
+To build the grace-roll, execute this on a Rocks development
 machine (e.g., a frontend or development appliance):
 
 ```shell
-% make default 2>&1 | tee build.log
-% grep "RPM build error" build.log
+% make 2>&1 | tee build.log
 ```
 
-If nothing is returned from the grep command then the roll should have been
-created as... `grace-*.iso`. If you built the roll on a Rocks frontend then
-proceed to the installation step. If you built the roll on a Rocks development
-appliance you need to copy the roll to your Rocks frontend before continuing
-with installation.
+A successful build will create the file `grace-*.disk1.iso`.  If you built the
+roll on a Rocks frontend, proceed to the installation step. If you built the
+roll on a Rocks development appliance, you need to copy the roll to your Rocks
+frontend before continuing with installation.
 
 This roll source supports building with different compilers and for different
-network fabrics and mpi flavors.  By default, it builds using the gnu compilers.
+MPI flavors.  The `ROLLCOMPILER` and `ROLLMPI` make variables can be used to
+specify the names of compiler and MPI modulefiles to use for building the
+software, e.g.,
 
 ```shell
-make
+make ROLLCOMPILER=intel ROLLMPI=mvapich2_ib 2>&1 | tee build.log
 ```
 
-produces a roll with a name that begins "`grace`"; it
-contains and installs similarly-named rpms.
+The build process recognizes "gnu", "intel" or "pgi" as the value for the
+`ROLLCOMPILER` variable; any MPI modulefile name may be used as the value of
+the `ROLLMPI` variable.  The default values are "gnu" and "rocks-openmpi".
 
 
 ## Installation
@@ -76,15 +88,9 @@ module files in:
 ## Testing
 
 The grace-roll includes a test script which can be run to verify proper
-installation of the grace-roll documentation, binaries and module files. To
+installation of the roll documentation, binaries and module files. To
 run the test scripts execute the following command(s):
 
 ```shell
 % /root/rolltests/grace.t 
-ok 1 - grace is installed
-ok 2 - grace test run
-ok 3 - grace module installed
-ok 4 - grace version module installed
-ok 5 - grace version module link created
-1..5
 ```

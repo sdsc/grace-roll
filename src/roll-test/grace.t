@@ -12,17 +12,29 @@ my $installedOnAppliancesPattern = '.';
 my $isInstalled = -d '/opt/grace';
 my $output;
 
+my $TESTFILE = 'tmpgrace';
+
 # grace-common.xml
 if($appliance =~ /$installedOnAppliancesPattern/) {
   ok($isInstalled, 'grace installed');
-  ok(-d "/opt/grace", "grace installed");
 } else {
   ok(! $isInstalled, 'grace not installed');
 }
 
-$packageHome = '/opt/grace';
 SKIP: {
-  skip 'grace not installed', 1 if ! -d $packageHome;
-  $output=`. /etc/profile.d/modules.sh;module load grace;/opt/grace/bin/xmgrace  -help 2>&1`;
-  ok($output =~ /Can't open display/, 'xmgrace executable exists');
+
+  skip 'grace not installed', 4 if ! $isInstalled;
+  $output = `module load grace; xmgrace -help 2>&1`;
+  ok($output =~ /Can't open display/, 'xmgrace works');
+
+  skip 'modules not installed', 3 if ! -f '/etc/profile.d/modules.sh';
+  `/bin/ls /opt/modulefiles/applications/grace/[0-9]* 2>&1`;
+  ok($? == 0, 'grace module installed');
+  `/bin/ls /opt/modulefiles/applications/grace/.version.[0-9]* 2>&1`;
+  ok($? == 0, 'grace version module installed');
+  ok(-l '/opt/modulefiles/applications/grace/.version',
+     'grace version module link created');
+
 }
+
+`rm -fr $TESTFILE*`;

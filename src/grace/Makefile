@@ -53,43 +53,58 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # 
 # @Copyright@
-#
-# $Log$
 
 REDHAT.ROOT = $(CURDIR)/../../
 
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
-include pull.mk
+include $(SDSCDEVEL)/Pull.mk
+include $(SDSCDEVEL)/Rules.mk
 
+$(NAME).spec: DESCRIPTION LICENSE
+
+DESCRIPTION:
+	$(MODULE_LOAD_CC); \
+	$(MODULE_LOAD_MPI); \
+	( \
+	  $(DESCRIBE_PKG); \
+	  $(DESCRIBE_CC); \
+	  $(DESCRIBE_MPI); \
+	  $(DESCRIBE_FFTW); \
+	  $(DESCRIBE_NETCDF) \
+	) > $@
+
+LICENSE: $(SRC_DIRS)
+	$(CHECK_LICENSE_FILES)
+	echo GPLv2+ > $@
+
+# TBD fftw/2.1.5?
 build: $(SRC_DIRS)
 	( \
 	  cd $(SOURCE_DIR); \
-          . /etc/profile.d/modules.sh; \
-          module load gnu mvapich2_ib fftw/2.1.5 netcdf; \
-          export CC=gcc; \
-          export FC=gfortran; \
-          export CFLAGS="-I$${FFTWHOME}/include -I$${NETCDFHOME}/include"; \
-	  ./configure --prefix=$(PKGROOT) --with-fftw-library="-L$${FFTWHOME}/lib -lfftw -lm" --with-netcdf-libraries="-L$${NETCDFHOME}/lib -lnetcdf"; \
-	  $(MAKE); \
+	  $(MODULE_LOAD_CC); \
+	  $(MODULE_LOAD_MPI); \
+	  $(MODULE_LOAD_FFTW); \
+	  $(MODULE_LOAD_NETCDF); \
+	  export CC=$(CC); \
+	  export FC=$(FC); \
+	  export CFLAGS="-I$${FFTWHOME}/include -I$${NETCDFHOME}/include"; \
+	  ./configure --prefix=$(PKGROOT) \
+	              --with-fftw-library="-L$${FFTWHOME}/lib -lfftw -lm" \
+	              --with-netcdf-libraries="-L$${NETCDFHOME}/lib -lnetcdf"; \
+	  $(MAKE) \
 	)
 	@echo "::: Package $(NAME) build complete :::"
 	
 install::
-	mkdir -p $(ROOT)/$(PKGROOT)
-	mkdir -p $(PKGROOT)
-	mkdir -p $(REDHAT.ROOT)/src/build-grace-modules
-	mount --bind $(ROOT)/$(PKGROOT) $(PKGROOT)
+	mkdir -p -m 755 $(ROOT)/$(PKGROOT)
+	$(PKGROOT_BIND_MOUNT)
 	( \
 	  cd $(SOURCE_DIR); \
 	  $(MAKE) install; \
 	)
-	umount $(PKGROOT)
-	cat grace.module | perl -pi -e "s!MODULEROOT!/opt/modulefiles/applications/grace!g;s!VERSION!$(VERSION)!g" \
-          > $(REDHAT.ROOT)/src/build-grace-modules/$(NAME).module
-
+	$(PKGROOT_BIND_UMOUNT)
 	@echo "::: Package $(NAME) install complete :::"
 
 clean::
-	rm -rf $(SOURCE_DIR)
-	-umount $(PKGROOT)
+	rm -rf $(SOURCE_DIR) DESCRIPTION LICENSE
