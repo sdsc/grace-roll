@@ -11,7 +11,7 @@ MPINAME := $(firstword $(subst /, ,$(ROLLMPI)))
 NAME	       = sdsc-grace
 VERSION	       = 5.1.25
 RELEASE	       = 0
-PKGROOT        = /opt/grace
+PKGROOT        = /opt
 
 SRC_SUBDIR     = grace
 
