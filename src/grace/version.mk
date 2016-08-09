@@ -9,8 +9,8 @@ endif
 MPINAME := $(firstword $(subst /, ,$(ROLLMPI)))
 
 NAME	       = sdsc-grace
-VERSION	       = 5.1.23
-RELEASE	       = 2
+VERSION	       = 5.1.25
+RELEASE	       = 0
 PKGROOT        = /opt/grace
 
 SRC_SUBDIR     = grace

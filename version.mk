@@ -1,6 +1,6 @@
-ROLLNAME	= grace
-VERSION		= 1.0
-RELEASE		= 0
-COLOR		= firebrick
+ROLLNAME        = grace
+VERSION        :=$(shell bash version.sh -v)
+RELEASE        :=$(shell bash version.sh -h)
+COLOR           = orange
 
-REDHAT.ROOT	= $(CURDIR)
+REDHAT.ROOT     = $(PWD)
