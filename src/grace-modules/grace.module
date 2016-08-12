@@ -1,6 +1,6 @@
 #%Module1.0
 module-whatis "Grace 2D plotting tool"
 module-whatis "Version: VERSION"
-setenv GRACEHOME /opt/grace/grace
-prepend-path PATH /opt/grace/grace/bin
+setenv GRACEHOME /opt/grace
+prepend-path PATH /opt/grace/bin
 module load ROLLCOMPILER ROLLMPI fftw netcdf
