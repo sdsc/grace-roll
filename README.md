@@ -4,7 +4,6 @@
 
 This roll builds the grace 2d plotting program
 
-
 For more information about the various packages included in the grace roll
 please visit their official web pages:
 
